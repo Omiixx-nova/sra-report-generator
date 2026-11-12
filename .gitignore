@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+
+# Local and CI report output
+output/
+ci_output/
+reports/
+*.pdf
+*.log
+
+# Keep the sample output directory, but not generated PDFs
+sample_output/*
+!sample_output/.gitkeep
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

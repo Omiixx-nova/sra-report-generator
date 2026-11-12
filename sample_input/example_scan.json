@@ -1,0 +1,150 @@
+{
+  "target": "example-lawfirm.co.uk",
+  "firm": "Example Law Firm LLP",
+  "scan_date": "2026-11-13T10:30:00Z",
+  "scanner": "LawFirm Scanner v1.0 — CyberOps",
+  "assessment": {
+    "fictional": true,
+    "note": "Synthetic demonstration data. The domain, firm and observations are not a real assessment."
+  },
+  "findings": {
+    "ports": {
+      "checks": [
+        {
+          "name": "Port 3389 (RDP)",
+          "status": "FAIL",
+          "detail": "OPEN — Remote desktop — major attack vector",
+          "severity": "CRITICAL",
+          "recommendation": "Block TCP/3389 at the perimeter firewall immediately. Disable public RDP, place any required remote access behind a VPN with multi-factor authentication, restrict access by source IP and review authentication logs for suspicious sign-ins.",
+          "business_impact": "An internet-facing remote desktop service gives attackers a direct route to guess or reuse credentials, deploy ransomware and reach confidential matter files. A successful compromise could interrupt conveyancing transactions and expose client money instructions.",
+          "fix_effort": "LOW",
+          "timeline": "0-7 days"
+        }
+      ],
+      "open_ports": [
+        80,
+        443,
+        3389
+      ]
+    },
+    "email": {
+      "checks": [
+        {
+          "name": "DMARC Record",
+          "status": "FAIL",
+          "detail": "No DMARC record — domain can be impersonated",
+          "severity": "CRITICAL",
+          "recommendation": "Publish a DMARC TXT record at _dmarc.example-lawfirm.co.uk, starting with monitoring if required and moving to p=quarantine then p=reject. Align SPF and DKIM, review aggregate reports and add a telephone callback procedure for changes to client bank details.",
+          "business_impact": "Without DMARC, criminals can send convincing invoices and bank-detail changes that appear to come from the firm. This is a common route to client-money loss, email modification fraud, SRA complaints and PI insurer disputes.",
+          "fix_effort": "LOW",
+          "timeline": "0-7 days"
+        },
+        {
+          "name": "SPF Record",
+          "status": "WARN",
+          "detail": "SPF present but soft fail only",
+          "severity": "MEDIUM",
+          "recommendation": "Audit every authorised sending service, then change the SPF policy from ~all to -all. Confirm alignment with DMARC and remove unused include statements.",
+          "business_impact": "A soft-fail SPF policy lets some spoofed messages reach clients. Staff may trust an apparently genuine email even though the sender was not authorised by the firm.",
+          "fix_effort": "LOW",
+          "timeline": "30-90 days"
+        }
+      ],
+      "spf_record": "v=spf1 include:spf.protection.outlook.com ~all",
+      "dmarc_record": null
+    },
+    "exposures": {
+      "checks": [
+        {
+          "name": "Environment file exposed (/.env)",
+          "status": "FAIL",
+          "detail": "EXPOSED — HTTP 200 (contents not reproduced in this report)",
+          "severity": "CRITICAL",
+          "recommendation": "Remove the file from the web root immediately, deny access to dotfiles at the server or WAF, rotate every credential and API key it may contain, and review access logs and recent administrative activity.",
+          "business_impact": "Environment files frequently contain database passwords, cloud keys or mail credentials. Public access could allow an attacker to read client records, send mail as the firm or move laterally into case-management systems.",
+          "fix_effort": "MEDIUM",
+          "timeline": "0-7 days"
+        },
+        {
+          "name": "Admin portal (/admin)",
+          "status": "FAIL",
+          "detail": "EXPOSED — HTTP 200 — administrative login page reachable from the internet",
+          "severity": "HIGH",
+          "recommendation": "Restrict /admin to an authenticated management network or VPN, enforce multi-factor authentication, remove default accounts, apply rate limiting and verify that failed-login monitoring is active.",
+          "business_impact": "A publicly reachable login page invites password guessing and credential-stuffing. If an administrator account is compromised, an attacker may change website content, access uploaded documents or redirect client communications.",
+          "fix_effort": "MEDIUM",
+          "timeline": "7-30 days"
+        },
+        {
+          "name": "Backup directory (/backup)",
+          "status": "WARN",
+          "detail": "Exists but protected — HTTP 403",
+          "severity": "MEDIUM",
+          "recommendation": "Move backups outside the public document root, confirm that directory listing is disabled, restrict retention and access, and test a restore from an offline or segregated copy.",
+          "business_impact": "A backup location on the public web server can become a single point of exposure if access rules change. Client data may be disclosed and recovery from ransomware may be weakened.",
+          "fix_effort": "LOW",
+          "timeline": "30-90 days"
+        }
+      ],
+      "paths_checked": 16
+    },
+    "headers": {
+      "checks": [
+        {
+          "name": "Strict-Transport-Security",
+          "status": "FAIL",
+          "detail": "HSTS missing — forces HTTPS",
+          "severity": "HIGH",
+          "recommendation": "Add Strict-Transport-Security: max-age=31536000; includeSubDomains after confirming every subdomain supports HTTPS. Redirect all HTTP traffic to HTTPS.",
+          "business_impact": "Without HSTS, a client or fee earner can be directed to an unencrypted page on an unsafe network. Credentials and confidential form submissions are easier to intercept.",
+          "fix_effort": "LOW",
+          "timeline": "7-30 days"
+        },
+        {
+          "name": "Server (Information Disclosure)",
+          "status": "WARN",
+          "detail": "Discloses: Apache/2.4.41 (Ubuntu)",
+          "severity": "MEDIUM",
+          "recommendation": "Suppress or generalise the Server and X-Powered-By headers, keep Apache and the operating system patched, and add the host to the firm's asset and patch inventory.",
+          "business_impact": "Advertising the exact server version makes it easier for an attacker to match known vulnerabilities to this host. Unpatched public software is a common entry point for opportunistic attacks.",
+          "fix_effort": "LOW",
+          "timeline": "30-90 days"
+        }
+      ]
+    },
+    "ssl": {
+      "checks": [
+        {
+          "name": "Certificate Expiry",
+          "status": "WARN",
+          "detail": "Expires in 61 days",
+          "severity": "MEDIUM",
+          "recommendation": "Renew the TLS certificate before expiry, automate renewal and expiry monitoring, verify the full certificate chain and disable obsolete TLS protocols and weak ciphers.",
+          "business_impact": "An expired certificate causes browser warnings, interrupted client portals and failed secure email or document links. It can also undermine confidence in the firm's handling of confidential information.",
+          "fix_effort": "LOW",
+          "timeline": "30-90 days"
+        }
+      ],
+      "raw": {
+        "expiry_date": "Jan 13 09:14:22 2027 GMT",
+        "days_remaining": 61,
+        "subject": {
+          "commonName": "example-lawfirm.co.uk"
+        },
+        "issuer": {
+          "organizationName": "Let's Encrypt",
+          "commonName": "R11"
+        }
+      }
+    }
+  },
+  "score": {
+    "score": 0,
+    "grade": "F",
+    "risk_level": "CRITICAL",
+    "critical": 3,
+    "high": 2,
+    "medium": 4,
+    "low": 0
+  }
+}
