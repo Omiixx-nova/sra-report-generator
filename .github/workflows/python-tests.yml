@@ -47,14 +47,15 @@ jobs:
             --output ci_output \
             --date "13 November 2026"
           python - <<'PY'
+          import re
           from pathlib import Path
           from pypdf import PdfReader
 
           reports = sorted(Path("ci_output").glob("*.pdf"))
           assert len(reports) == 1, f"Expected one PDF, found {reports}"
           reader = PdfReader(str(reports[0]))
-          text = "\n".join(page.extract_text() or "" for page in reader.pages)
-          assert len(reader.pages) >= 4, f"Unexpected page count: {len(reader.pages)}"
+          text = re.sub(r"\s+", " ", "\n".join(page.extract_text() or "" for page in reader.pages))
+          assert len(reader.pages) >= 12, f"Unexpected page count: {len(reader.pages)}"
           for phrase in (
               "CYBER SECURITY ASSESSMENT REPORT",
               "EXECUTIVE SUMMARY",
